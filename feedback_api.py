@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-
+from fastapi.responses import PlainTextResponse
 app = FastAPI(title="Restaurant Feedback API")
 
 #Request model for feedback
@@ -11,7 +11,7 @@ class Feedback(BaseModel):
 
 # POST endpoint to submit feedback
 @app.post("/feedback")
-def submit_feedback(feedback:Feedback):
+def submit_feedback(feedback:Feedback, response_class=PlainTextResponse):
     return{
         "message" : "Thank You",
         "your_feedback" : {
