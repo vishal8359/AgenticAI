@@ -30,13 +30,13 @@ def get_all_events():
 
 @proj.get('/events/search')
 def search_events(title: str, city: str="Delhi"):
-    result = []
+    result=[]
     for event in events_db:
         if event.title.lower().count(title.lower()) > 0 and event.city.lower() == city.lower():
             result.append(event)
     if len(result) > 0:
         return result
-    return {"message" : "No events found with title containing" + title+" and city as "+ city}
+    raise Exception(status_code=404, detail="Not found")
 
 @proj.get('/events/{event_id}')
 def get_event(event_id: int):
@@ -47,24 +47,26 @@ def get_event(event_id: int):
 
 # create a new event
 @proj.post("/events/add")
-def create_event(event_id:int, title:str, date:date=date.today(), organiser: str=None, email:str=None, city: str='Mumbai'):
+def create_event(event_id:int, title: str, date: date
+                ,organiser: str, email: str, city: str='Delhi'):
     for event in events_db:
         if event.id == event_id:
-            raise HTTPException(status_code=404, detail="Event already exists")
-        
-    event = Event(event_id, title, date, organiser, city, email)
-    events_db.append(event)
-    return {"message" : "Event created successfully", "event":event}
+            return{"Event Already exists"}
+    new_event = Event(event_id, title, date, organiser, email, city)
+    events_db.append(new_event)
+    return {"message": "Event created successfully."}
+
 
 # put method - used when we need to replace the existing source on the server with another source
 @proj.put('/events/replace/{event_id}')
-def update_event(event_id:int, title:str, date:date=date.today(), organiser: str=None, email:str=None, city:str="Noida"):
-    for i, event in enumerate(events_db):
+def update_event(event_id: int, title:str=None, date:date=None, organiser:str=None, email:str=None, city:str=None):
+    for i,event in enumerate(events_db):
         if event.id == event_id:
-            updated_event= Event(event_id, title, date, organiser, email, city)
-            events_db[i] = updated_event
-            return {"message" : "Event Updated", "event":updated_event}
-    raise HTTPException(status_code=404, detail="Event not found for updation")
+            new_event = Event(event_id, title, date, organiser, city, email)
+            events_db[i] = new_event
+            return {new_event}
+    return {"Event not found"}
+    
 
 # patch method - used when we need to edit only a part of an existing resource on the server instead of replacing entire resource
 
