@@ -93,5 +93,5 @@ def delete_event(event_id:int):
     for event in events_db:
         if event.id == event_id:
             events_db.remove(event)
-            return {"message":f"Event with id {event_id} is deleted"}
+            return {"message":f"Event with id {event_id} is deleted from db"}
     return {"error":"Event not found"}
